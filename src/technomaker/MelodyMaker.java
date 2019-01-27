@@ -66,8 +66,9 @@ public class MelodyMaker {
 		addStrophe(40 * 3);
 		addRefrain(40 * 4);
 		addStrophe(40 * 5);
-		addRefrain(40 * 6);
-		addStrophe(40 * 7);
+		addStrophe(40 * 6);
+		generateRefrain();
+		addRefrain(40 * 7);
 //		for (int i = 0; i < 8; i++)
 //			addRefrain(40 * i);
 	}
@@ -77,14 +78,15 @@ public class MelodyMaker {
 		int variation = 1 + (int) (Math.random() * 3);
 
 		for (int i = 0; i < 40;) {
+			int länge = (int) (1 + Math.random() * 2);
 
-			i += 1 + Math.pow(Math.random() * 3, 2) * 0.3;
+			i += länge;
 
 			ton += new Random().nextInt(variation * 2 + 1) - variation;
-			if (ton <= 0)
-				ton = 0;
-			if (ton >= 128)
-				ton = 127;
+			if (ton <= 10)
+				ton = 10;
+			if (ton >= 90)
+				ton = 90;
 
 			// **** set instrument to Piano ****
 			ShortMessage mm = new ShortMessage();
@@ -100,36 +102,37 @@ public class MelodyMaker {
 			// **** note off - middle C - 120 ticks later ****
 			mm = new ShortMessage();
 			mm.setMessage(ShortMessage.NOTE_OFF, ton, 127);
-			me = new MidiEvent(mm, (long) 1 + i + offset);
+			me = new MidiEvent(mm, (long) länge + i + offset);
 			t.add(me);
 
 		}
 	}
 
-	ShortMessage[] refrainOn = new ShortMessage[40];
-	ShortMessage[] refrainOff = new ShortMessage[40];
+	ShortMessage[] refrainOn = new ShortMessage[20];
+	ShortMessage[] refrainOff = new ShortMessage[20];
 	int[] tonLänge = new int[40];
 
 	private void generateRefrain() throws InvalidMidiDataException {
 		int variation = 1 + (int) (Math.random() * 3);
 
-		for (int i = 0; i < 39;) {
-			i += 1 + Math.random() * 2;
+		for (int i = 0; i < 19;) {
+			int länge = (int) (1 + Math.random() * 2);
+			i += länge;
 
 			ton += new Random().nextInt(variation * 2 + 1) - variation;
-			if (ton <= 0)
-				ton = 0;
-			if (ton >= 128)
-				ton = 127;
+			if (ton <= 10)
+				ton = 10;
+			if (ton >= 90)
+				ton = 90;
 			ShortMessage mm = new ShortMessage();
 			mm.setMessage(ShortMessage.NOTE_ON, ton, 127);
 			ShortMessage mm2 = new ShortMessage();
 			mm2.setMessage(ShortMessage.NOTE_OFF, ton, 127);
-			if (i >= 40)
-				i = 39;
+			if (i >= 20)
+				i = 19;
 			refrainOn[i] = mm;
 			refrainOff[i] = mm2;
-			tonLänge[i] = i;
+			tonLänge[i] = länge;
 		}
 	}
 
@@ -143,16 +146,16 @@ public class MelodyMaker {
 			MidiEvent me = new MidiEvent(mm, (long) 0 + offset);
 			t.add(me);
 
-			if (refrainOn[i] == null) {
-				System.out.println("exit"+i);
+			if (refrainOn[i % 19] == null) {
+				System.out.println("exit" + i);
 				continue;
 			}
 
 			// **** note on - middle C ****
-			me = new MidiEvent(refrainOn[i], (long) i + offset);
+			me = new MidiEvent(refrainOn[i % 19], (long) i + offset);
 			t.add(me);
 			// **** note off - middle C - 120 ticks later ****
-			me = new MidiEvent(refrainOff[i], (long) tonLänge[i] + offset);
+			me = new MidiEvent(refrainOff[i % 19], (long) tonLänge[i % 19] + offset + i);
 			t.add(me);
 
 		}
