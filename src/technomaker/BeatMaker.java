@@ -11,8 +11,9 @@ import javax.sound.midi.Track;
 public class BeatMaker {
 	Sequence s;
 	Track t;
+	private int drum = 13;
 
-	public BeatMaker(Sequence s) throws InvalidMidiDataException {
+	public BeatMaker(Sequence s, int speed) throws InvalidMidiDataException {
 		this.s = s;
 		t = s.createTrack();
 
@@ -25,7 +26,7 @@ public class BeatMaker {
 
 		// **** set tempo (meta event) ****
 		MetaMessage mt = new MetaMessage();
-		byte[] bt = { 0x10, (byte) 0x00, 0x00 };
+		byte[] bt = { (byte) speed, (byte) 0x00, 0x00 };
 		mt.setMessage(0x51, bt, 3);
 		me = new MidiEvent(mt, (long) 0);
 		t.add(me);
@@ -54,13 +55,15 @@ public class BeatMaker {
 
 	private void generateDrums() throws InvalidMidiDataException {
 
-		int b1 = (int) (Math.random() * 3);
-		int b2 = (int) (Math.random() * 3);
+		// int b1 = (int) (Math.random() * 3);
+		// int b2 = (int) (Math.random() * 3);
+		int b1 = 0;
+		int b2 = 2;
 
 		for (int i = 0; i < 100; i++) {
 			// **** set instrument to Piano ****
 			ShortMessage mm = new ShortMessage();
-			mm.setMessage(ShortMessage.PROGRAM_CHANGE, 1, 118, 0x00);
+			mm.setMessage(ShortMessage.PROGRAM_CHANGE, 1, drum , 0x00);
 			MidiEvent me = new MidiEvent(mm, (long) 0);
 			t.add(me);
 

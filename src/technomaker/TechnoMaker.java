@@ -12,13 +12,15 @@ public class TechnoMaker {
 	Sequence s;
 	BeatMaker bm;
 	MelodyMaker mm;
+	int speed;
 	
-	public TechnoMaker() {
+	public TechnoMaker(int speed) {
+		this.speed = speed;
 		try {
 			s = new Sequence(Sequence.PPQ, 4);
 			Track t = s.createTrack();
-			mm = new MelodyMaker(s);
-			bm = new BeatMaker(s);
+			mm = new MelodyMaker(s,this.speed);
+			bm = new BeatMaker(s,this.speed);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
